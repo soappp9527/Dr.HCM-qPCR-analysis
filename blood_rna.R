@@ -1,12 +1,9 @@
-setwd("E:/work/RProject/dr hcm")
 library(data.table)
 library(ggplot2)
-snd_data <- read.csv("data/qPCR_data.csv",stringsAsFactors = FALSE)
-fst_data <- read.csv("data/1st_data.csv",stringsAsFactors = FALSE)
-fst_data <- data.table(fst_data)
+snd_data <- fread("data/qPCR_data.csv",stringsAsFactors = FALSE)
+fst_data <- fread("data/1st_data.csv",stringsAsFactors = FALSE)
 fst_data$type <- factor(fst_data$type, labels = c("No", "Mild", "Moderate", "Heavy"),
                         levels = c("No Smoking", "Mild Smoking", "Moderate Smoking", "Heavy Smoking"))
-snd_data <- data.table(snd_data)
 group <- read.csv("data/group.csv",stringsAsFactors = FALSE)
 group$type <- factor(group$type, labels = c("No", "Mild", "Moderate", "Heavy"),
                      levels = c("No Smoking", "Mild Smoking", "Moderate Smoking", "Heavy Smoking"))
@@ -14,6 +11,7 @@ group$type <- factor(group$type, labels = c("No", "Mild", "Moderate", "Heavy"),
 #1st result####
 ct_1st <- cbind(fst_data[,1:2], fst_data[,4:6]-fst_data$GAPDH)
 ct_1st <- melt(ct_1st, id.var = c("Sample.Name", "type"), variable.name = "gene")
+
 #anova
 aov_1st_XPA <- aov(value ~ type, data = ct_1st[gene == "XPA",])
 summary(aov_1st_XPA)
@@ -22,9 +20,11 @@ summary(aov_1st_XPC)
 TukeyHSD(aov_1st_XPC)# Mild Smoking-Heavy Smoking 
 aov_1st_POLD4 <- aov(value ~ type, data = ct_1st[gene == "POLD4",])
 summary(aov_1st_POLD4)
+
 #delta ct boxplot
 ggplot(ct_1st)+aes(type, value)+geom_boxplot()+facet_grid(.~gene)+
-  theme_bw()+theme(text = element_text(size= 25),axis.text.x = element_text(angle = 45, hjust = 0.9))+labs(x = "Smoking Group", y = "¦¤CT")
+  theme_bw()+theme(text = element_text(size= 25),axis.text.x = element_text(angle = 45, hjust = 0.9))+labs(x = "Smoking Group", y = "¦¤Ct")
+
 #delta ct barplot
 ct.bar <- ct_1st[,.(mean = mean(value), se = sd(value)/sqrt(.N)), by = c("gene","type")]
 
@@ -34,6 +34,7 @@ ggsave(filename = "ct1_barplot.jpeg",
          theme_bw()+theme(text = element_text(size= 25),axis.text.x = element_text(angle = 45, hjust = 0.9))+
          scale_y_continuous(limits = c(0,9), expand = c(0,0))+labs(x = "Smoking Group", y = "¦¤Ct"),
        width = 22, height = 16, dpi = 400, units = "cm", device = "jpeg")
+
 #relative expression barplot
 re_1st <- ct_1st[,mean(value, na.rm = TRUE), by = c("type", "gene"),]
 re_1st <- dcast(re_1st, gene~type)
@@ -79,7 +80,7 @@ ct_mean <- dcast(ct_mean, Sample.Name~Target.Name)
 ct_mean <- cbind(ct_mean[,1], ct_mean[,3:5]-ct_mean$GAPDH)
 ct_mean <- merge(group, ct_mean, by = c("Sample.Name"))
 ct_mean <- melt(ct_mean,id.var = c("Sample.Name", "type"), variable.name = "gene")
-ct_mean <- data.table(ct_mean)
+
 #anova
 aov_POLD1 <- aov(value ~ type, data = ct_mean[gene == "POLD1"])
 anova(aov_POLD1)
@@ -88,12 +89,14 @@ anova(aov_POLD2)
 TukeyHSD(aov_POLD2)
 aov_POLD3 <- aov(value ~ type, data = ct_mean[gene == "POLD3"])
 anova(aov_POLD3)
+
 #delta ct boxplot
 ggsave(filename = "ct_boxplot.jpeg",
   ggplot(ct_mean)+aes(type, value)+geom_boxplot()+facet_grid(.~gene)+theme_bw()+
     theme(text = element_text(size= 25),axis.text.x = element_text(angle = 45, hjust = 0.9))+
     scale_y_continuous(limits = c(0,12.4), expand = c(0,0))+labs(x = "Smoking Group", y = "¦¤Ct"),
   width = 22, height = 16, dpi = 400, units = "cm", device = "jpeg")
+
 #delta ct barplot
 ct.bar <- ct_mean[,.(mean = mean(value), se = sd(value)/sqrt(.N)), by = c("gene","type")]
 
@@ -103,6 +106,7 @@ ggsave(filename = "ct_barplot.jpeg",
          theme_bw()+theme(text = element_text(size= 25),axis.text.x = element_text(angle = 45, hjust = 0.9))+
          scale_y_continuous(limits = c(0,12.4), expand = c(0,0))+labs(x = "Smoking Group", y = "¦¤Ct"),
        width = 22, height = 16, dpi = 400, units = "cm", device = "jpeg")
+
 #relative expression barplot
 re_2nd <- ct_mean[,mean(value, na.rm = TRUE), by = c("type", "gene"),]
 re_2nd <- dcast(re_2nd, gene~type)
