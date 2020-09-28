@@ -29,6 +29,7 @@ bas_c <- bas_b[, .(ct_mean = mean(ct)), by = c("batch", "conc", "target")]
 bas_c <-  dcast(bas_c, batch + conc ~ target, value.var = "ct_mean")
 bas_c[, 4:6] <- bas_c[, 4:6] - bas_c$GAPDH
 
+#write.csv(bas_c, "BEAS-2B_RNA.csv", row.names = FALSE)
 kruskal.test(XPA ~ conc, data = bas_c)
 kruskal.test(XPC ~ conc, data = bas_c)
 kruskal.test(POLD4 ~ conc, data = bas_c)
@@ -50,7 +51,7 @@ ggsave("BAS_XPA.png",
        ggplot(bas_sta) + geom_errorbar(aes(x = conc, ymax = XPA_sum+XPA_se, ymin = XPA_sum-0.1), size = 0.7, width = 0.3) +
          geom_bar(aes(x = conc, y = XPA_sum),stat = "identity", width = 0.6) +
          scale_y_continuous(expand = c(0, 0), limits = c(0, 17)) +
-         labs(title = "XPA mRNA expression in BEAS-2B", x = "Benzoapyrene(μM)", y = "ΔCt(XPA)"),
+         labs(title = "XPA mRNA expression in BEAS-2B", x = "Benzo[a]pyrene(μM)", y = "ΔCt(XPA)"),
        height = 10, width = 10, units = "cm", dpi = 600
 )
 
@@ -58,7 +59,7 @@ ggsave("BAS_XPC.png",
        ggplot(bas_sta) + geom_errorbar(aes(x = conc, ymax = XPC_sum+XPC_se, ymin = XPC_sum-0.1), size = 0.7, width = 0.3) +
          geom_bar(aes(x = conc, y = XPC_sum),stat = "identity", width = 0.6) +
          scale_y_continuous(expand = c(0, 0), limits = c(0, 17)) +
-         labs(title = "XPC mRNA expression in BEAS-2B", x = "Benzoapyrene(μM)", y = "ΔCt(XPC)"),
+         labs(title = "XPC mRNA expression in BEAS-2B", x = "Benzo[a]pyrene(μM)", y = "ΔCt(XPC)"),
        height = 10, width = 10, units = "cm", dpi = 600
 )
 
@@ -66,7 +67,7 @@ ggsave("BAS_POLD4.png",
        ggplot(bas_sta) + geom_errorbar(aes(x = conc, ymax = POLD4_sum+XPC_se, ymin = POLD4_sum-0.1), size = 0.7, width = 0.3) +
          geom_bar(aes(x = conc, y = POLD4_sum),stat = "identity", width = 0.6) +
          scale_y_continuous(expand = c(0, 0), limits = c(0, 17)) +
-         labs(title = "POLD4 mRNA expression in BEAS-2B", x = "Benzoapyrene(μM)", y = "ΔCt(POLD4)"),
+         labs(title = "POLD4 mRNA expression in BEAS-2B", x = "Benzo[a]pyrene(μM)", y = "ΔCt(POLD4)"),
        height = 10, width = 10, units = "cm", dpi = 600
 )
 
@@ -76,6 +77,8 @@ ggsave("BAS_POLD4.png",
 imr <- fread("data/IMR90-RNA-IMR90-20200723.csv", stringsAsFactors = FALSE)
 imr$conc <- factor(imr$浓度, levels = c(0.0, 1, 2.5, 5, 10, 25))
 imr <- imr[批次!=1]
+
+write.csv(imr, "IMR90_RNA.csv", row.names = FALSE)
 
 #stat
 kruskal.test(`XPA △Ct` ~ conc, data = imr)
@@ -102,7 +105,7 @@ ggsave("IMR_XPA.png",
        ggplot(imr_sta) + geom_errorbar(aes(x = conc, ymax = XPA_sum+XPA_se, ymin = XPA_sum-0.1), size = 0.7, width = 0.3) +
          geom_bar(aes(x = conc, y = XPA_sum),stat = "identity", width = 0.6) +
          scale_y_continuous(expand = c(0, 0), limits = c(0, 17)) +
-         labs(title = "XPA mRNA expression in IMR-90", x = "Benzoapyrene(μM)", y = "ΔCt(XPA)"),
+         labs(title = "XPA mRNA expression in IMR-90", x = "Benzo[a]pyrene(μM)", y = "ΔCt(XPA)"),
        height = 10, width = 10, units = "cm", dpi = 600
 )
 
@@ -110,7 +113,7 @@ ggsave("IMR_XPC.png",
        ggplot(imr_sta) + geom_errorbar(aes(x = conc, ymax = XPC_sum+XPC_se, ymin = XPC_sum-0.1), size = 0.7, width = 0.3) +
          geom_bar(aes(x = conc, y = XPC_sum),stat = "identity", width = 0.6) +
          scale_y_continuous(expand = c(0, 0), limits = c(0, 17)) +
-         labs(title = "XPC mRNA expression in IMR-90", x = "Benzoapyrene(μM)", y = "ΔCt(XPC)"),
+         labs(title = "XPC mRNA expression in IMR-90", x = "Benzo[a]pyrene(μM)", y = "ΔCt(XPC)"),
        height = 10, width = 10, units = "cm", dpi = 600
 )
 
@@ -118,6 +121,6 @@ ggsave("IMR_POLD4.png",
        ggplot(imr_sta) + geom_errorbar(aes(x = conc, ymax = POLD4_sum+XPC_se, ymin = POLD4_sum-0.1), size = 0.7, width = 0.3) +
          geom_bar(aes(x = conc, y = POLD4_sum),stat = "identity", width = 0.6) +
          scale_y_continuous(expand = c(0, 0), limits = c(0, 17)) +
-         labs(title = "POLD4 mRNA expression in IMR-90", x = "Benzoapyrene(μM)", y = "ΔCt(POLD4)"),
+         labs(title = "POLD4 mRNA expression in IMR-90", x = "Benzo[a]pyrene(μM)", y = "ΔCt(POLD4)"),
        height = 10, width = 10, units = "cm", dpi = 600
 )
